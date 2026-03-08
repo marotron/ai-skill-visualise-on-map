@@ -1,0 +1,12 @@
+[
+  { "name": "Wrocław – 350 000 PLN, 2 pokoje, 42 m²", "lat": 51.1079, "lon": 17.0385, "url": "https://example.com/listing/1" },
+  { "name": "ul. Świdnicka – 420 000 PLN, 2 pokoje, 48 m²", "lat": 51.1020, "lon": 17.0320, "url": "https://example.com/listing/2" },
+  { "name": "Wrocław – 380 000 PLN, 3 pokoje, 55 m²", "lat": 51.1120, "lon": 17.0450, "url": "https://example.com/listing/3" },
+  { "name": "ul. Oławska – 395 000 PLN, 1 pokój, 32 m²", "lat": 51.0980, "lon": 17.0280, "url": "https://example.com/listing/4" },
+  { "name": "ul. Piłsudskiego – 445 000 PLN, 2 pokoje, 45 m²", "lat": 51.1050, "lon": 17.0400, "url": "https://example.com/listing/5" },
+  { "name": "ul. Legnicka – 410 000 PLN, 2 pokoje, 50 m²", "lat": 51.1150, "lon": 17.0200, "url": "https://example.com/listing/6" },
+  { "name": "ul. Grabiszyńska – 365 000 PLN, 1 pokój, 28 m²", "lat": 51.0950, "lon": 17.0150, "url": "https://example.com/listing/7" },
+  { "name": "ul. Powstańców Śląskich – 480 000 PLN, 3 pokoje, 62 m²", "lat": 51.1200, "lon": 17.0500, "url": "https://example.com/listing/8" },
+  { "name": "ul. Krucza – 398 000 PLN, 2 pokoje, 40 m²", "lat": 51.1000, "lon": 17.0350, "url": "https://example.com/listing/9" },
+  { "name": "Wrocław – 425 000 PLN, 2 pokoje, 52 m²", "lat": 51.1080, "lon": 17.0420, "url": "https://example.com/listing/10" }
+]

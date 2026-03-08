@@ -1,1 +1,4 @@
 .DS_Store
+
+# Real/sensitive data (keep sample data only in repo)
+*_cheapest_properties.json
