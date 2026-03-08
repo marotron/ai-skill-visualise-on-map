@@ -15,7 +15,7 @@ Each folder contains the platform-specific skill definition and any related file
 
 ## Usage
 
-- **Perplexity**: Use the contents of `perplexity/` according to Perplexity’s skill/project documentation.
+- **Perplexity**: Use the contents of `perplexity/` according to Perplexity’s skill/project documentation. **Note:** Adding this as a skill in Perplexity (e.g. under Computer → Skills) requires a **Perplexity Max** subscription (~$200/month).
 - **Cursor**: Use the contents of `cursor/` (e.g. copy into `.cursor/skills/` or follow Cursor’s skill setup).
 
 ## License
