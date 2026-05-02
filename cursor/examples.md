@@ -66,3 +66,31 @@ Data: lat, lon, value (e.g. count, intensity, or any numeric metric per point).
 ```
 
 Same as Example 1 but with a `value` field; the script will choose the heatmap layer automatically.
+
+---
+
+## Example 4: UK regions (choropleth, bundled GeoJSON)
+
+Use this when metrics are published for **UK countries / English regions** (ONS, Nomis, etc.). Put **`region`** values that match the bundled GeoJSON’s **`properties.na`** strings (Eurostat / NUTS names).
+
+1. Build `uk_metrics.csv` (example):
+
+```csv
+region,value
+London,7.4
+Scotland,4.1
+Northern Ireland,2.2
+```
+
+2. Run with **`--preset uk`** (uses `$SKILL_ROOT/data/uk_nuts1.geojson` and `-k feature.properties.na` automatically):
+
+```bash
+~/.cursor/skills/visualise_on_map/.venv/bin/python ~/.cursor/skills/visualise_on_map/scripts/visualise_on_map.py \
+  --preset uk -i uk_metrics.csv -o uk_map.html \
+  -t "Unemployment rate (%)" \
+  -n "Your source, period, and definition of the metric (e.g. ILO, LFS, SA)."
+```
+
+3. Open `uk_map.html` in a browser.
+
+**Name gotchas:** ONS tables may say **“East”** but the boundary label is **“East of England”**; “Yorkshire and **The** Humber” in ONS vs “Yorkshire and **the** Humber” in Eurostat — match **`na`** in `data/uk_nuts1.geojson` exactly. Optional columns **`info`** and **`url`** add popup text and a source link per region.

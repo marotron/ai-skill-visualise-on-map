@@ -16,17 +16,23 @@ python3 -m venv .venv
 .venv/bin/pip install -r scripts/requirements.txt
 ```
 
-Use this to run the script (from any directory):
+Use this to run the script (from any directory). **`SKILL_ROOT`** means the folder that contains `SKILL.md` (when installed: `~/.cursor/skills/visualise_on_map`; in this repo: `cursor/`).
 
 ```bash
-~/.cursor/skills/visualise_on_map/.venv/bin/python ~/.cursor/skills/visualise_on_map/scripts/visualise_on_map.py -i data.json -o map.html
+$SKILL_ROOT/.venv/bin/python $SKILL_ROOT/scripts/visualise_on_map.py -i data.json -o map.html
 ```
 
 **Alternative: project venv or global**  
-- In a **project venv**: activate it, then `pip install -r ~/.cursor/skills/visualise_on_map/scripts/requirements.txt`; run with `python .../visualise_on_map.py` (same `python` as that venv).  
+- In a **project venv**: activate it, then `pip install -r $SKILL_ROOT/scripts/requirements.txt`; run with `python .../visualise_on_map.py` (same `python` as that venv).  
 - **Global**: run the same `pip install -r ...` with no venv active; then `python` is system/user Python.
 
 Requires: `folium`, `pandas`. For region/choropleth maps also `geopandas`.
+
+## Basemap and opening HTML locally
+
+The map uses **CartoDB Positron** tiles by default (not raw OpenStreetMap raster tiles). That avoids **403 “Access blocked”** overlays when opening the exported HTML as **`file://`** — volunteer OSM tile servers often reject requests without an acceptable `Referer` ([policy](https://osm.wiki/Blocked)).
+
+---
 
 ## How to use this skill
 
@@ -45,9 +51,17 @@ Use this skill when you need to **visualise geographic or region-based data** (e
 
 | Data you have | Map type | Notes |
 |---------------|----------|--------|
-| `region` + `value` | Choropleth | Needs a GeoJSON for the regions (e.g. `poland.geojson`). |
+| `region` + `value` | Choropleth | Needs a GeoJSON whose **region labels** match a property on each feature (see `--geojson-key`). |
 | `lat` + `lon` (points) | Markers | Optional `name`, `value` for popups. Optional `url` or `link` for a source link in the popup. |
 | `lat` + `lon` + `value` | Heatmap | Value = intensity. |
+
+### Choropleth: matching region names
+
+- **`--geojson-key`** tells Folium which GeoJSON property joins to your CSV column **`region`**. Examples: `feature.properties.name`, `feature.properties.na`.
+- **UK official statistics** often label regions like ONS **“East”** while boundary files use **“East of England”** — the **`region`** column must match the **GeoJSON** label exactly, not the headline table shorthand.
+- **Bundled UK data** uses Eurostat labels in **`properties.na`** (e.g. **“Yorkshire and the Humber”** — note **the**).
+
+---
 
 ## Quick workflow
 
@@ -77,13 +91,22 @@ Use this skill when you need to **visualise geographic or region-based data** (e
    ```
    (If you use a project venv or global install, use `python` instead of the long path.)
 
-4. **Choropleth only**  
-   If you have regions + values and a GeoJSON file:
+4. **UK choropleth (one flag)**  
+   If regions are UK NUTS1 and values match bundled boundary labels (`data/uk_nuts1.geojson`, Eurostat **`na`**):
    ```bash
-   ~/.cursor/skills/visualise_on_map/.venv/bin/python ~/.cursor/skills/visualise_on_map/scripts/visualise_on_map.py -i regions.csv -o map.html --geojson path/to/poland.geojson
+   ~/.cursor/skills/visualise_on_map/.venv/bin/python ~/.cursor/skills/visualise_on_map/scripts/visualise_on_map.py \
+     --preset uk -i regions.csv -o map.html -t "Legend title" -n "Source and methodology note"
+   ```
+   `--preset uk` sets **`--geojson`** to `$SKILL_ROOT/data/uk_nuts1.geojson` and **`--geojson-key`** to `feature.properties.na` unless you override with `-g` / `-k` or **`GEOJSON_KEY`** in the environment.
+
+5. **Choropleth (generic)**  
+   If you have regions + values and any GeoJSON file:
+   ```bash
+   ~/.cursor/skills/visualise_on_map/.venv/bin/python ~/.cursor/skills/visualise_on_map/scripts/visualise_on_map.py \
+     -i regions.csv -o map.html --geojson path/to/regions.geojson -k feature.properties.name
    ```
 
-5. **Open the result**  
+6. **Open the result**  
    Open the map automatically when possible so the user sees it right away:
    - **macOS**: `open <output_path>` (e.g. `open map.html`)
    - **Linux**: `xdg-open <output_path>`
@@ -93,16 +116,16 @@ Use this skill when you need to **visualise geographic or region-based data** (e
 
 ## Script reference
 
-- **Path**: `~/.cursor/skills/visualise_on_map/scripts/visualise_on_map.py`  
-  **Run with (skill venv)**: `~/.cursor/skills/visualise_on_map/.venv/bin/python` + script path
+- **Path**: `$SKILL_ROOT/scripts/visualise_on_map.py`  
+  **Run with (skill venv)**: `$SKILL_ROOT/.venv/bin/python` + script path
 - **Dependencies**: `folium`, `pandas`. Choropleth also uses `geopandas` and a GeoJSON file.
-- **Args**: `--input` / `-i` (JSON or CSV), `--output` / `-o` (HTML path), `--geojson` / `-g` (for choropleth).
-- **Env**: `DATA_PATH`, `OUTPUT_PATH`, `GEOJSON_PATH` can replace args.
+- **Args**: `--input` / `-i`, `--output` / `-o`, `--geojson` / `-g`, `--geojson-key` / `-k`, **`--preset uk`**, `--legend-title` / `-t`, `--legend-note` / `-n`.
+- **Env**: `DATA_PATH`, `OUTPUT_PATH`, `GEOJSON_PATH`, `GEOJSON_KEY`, `LEGEND_TITLE`, `LEGEND_NOTE` can replace args where supported.
 
 If no `--input` is given, the script uses built-in sample data and writes `universal_map.html`.
 
 - **Source links in popups**: If your data has a `url` or `link` column, marker popups will show the label plus a “View listing →” link that opens in a new tab. The script uses an iframe so the link is rendered as HTML correctly.
-- For more examples (point list, choropleth, heatmap), see [examples.md](examples.md).
+- For more examples (point list, choropleth, heatmap, **UK**), see [examples.md](examples.md).
 
 ## Geocoding
 

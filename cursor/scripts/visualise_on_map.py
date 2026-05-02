@@ -13,6 +13,12 @@ import sys
 
 import pandas as pd
 
+# Bundled Eurostat NUTS 2021 (level 1) features for the UK, property `na` = region name.
+BUNDLED_UK_NUTS1_GEOJSON = os.path.normpath(
+    os.path.join(os.path.dirname(__file__), "..", "data", "uk_nuts1.geojson")
+)
+PRESET_UK_GEOJSON_KEY = "feature.properties.na"
+
 # Optional: geopandas for choropleth; folium for all map types
 try:
     import folium
@@ -234,6 +240,12 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Visualise results on a map")
     parser.add_argument("--input", "-i", default=os.environ.get("DATA_PATH"), help="Input JSON or CSV path")
     parser.add_argument("--output", "-o", default=os.environ.get("OUTPUT_PATH", "universal_map.html"), help="Output HTML path")
+    parser.add_argument(
+        "--preset",
+        choices=("uk",),
+        default=None,
+        help="Choropleth shortcut: use bundled UK NUTS1 GeoJSON and Eurostat join key `na` (see SKILL.md)",
+    )
     parser.add_argument("--geojson", "-g", default=os.environ.get("GEOJSON_PATH"), help="GeoJSON for choropleth (e.g. poland.geojson)")
     parser.add_argument(
         "--geojson-key", "-k",
@@ -243,6 +255,17 @@ def main() -> None:
     parser.add_argument("--legend-title", "-t", default=os.environ.get("LEGEND_TITLE"), help="Choropleth legend title (e.g. Crime rate)")
     parser.add_argument("--legend-note", "-n", default=os.environ.get("LEGEND_NOTE"), help="Short note: how values were calculated (units, sources)")
     args = parser.parse_args()
+
+    if args.preset == "uk":
+        if args.geojson is None:
+            args.geojson = BUNDLED_UK_NUTS1_GEOJSON
+        # Use Eurostat region label unless user passed -k/--geojson-key or set GEOJSON_KEY
+        key_from_cli = any(
+            a == "-k" or a.startswith("--geojson-key")
+            for a in sys.argv[1:]
+        )
+        if not os.environ.get("GEOJSON_KEY") and not key_from_cli:
+            args.geojson_key = PRESET_UK_GEOJSON_KEY
 
     if args.input:
         df = load_data(args.input)
