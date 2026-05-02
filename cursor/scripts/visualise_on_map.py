@@ -169,7 +169,13 @@ def build_map(
     legend_note: str | None = None,
 ) -> None:
     location, zoom = get_center_and_zoom(df, geo_geojson)
-    m = folium.Map(location=location, zoom_start=zoom)
+    # CartoDB Positron: works when opening HTML as file:// (OSM tile.openstreetmap.org
+    # often returns 403 without a browser Referer per OSM tile policy).
+    m = folium.Map(
+        location=location,
+        zoom_start=zoom,
+        tiles="CartoDB positron",
+    )
 
     if "region" in df.columns and "value" in df.columns and geo_geojson and os.path.isfile(geo_geojson):
         # Choropleth: region-based shading (areas)
